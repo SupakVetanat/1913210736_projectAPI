@@ -27,7 +27,7 @@ exports.index = async (req, res, next) => {
 }
 
 exports.product = async (req, res, next) => {
-  const product = await Product.find().populate('brand').select('name price shop')
+  const product = await Product.find().populate('brand').select('name price brand description')
 
   res.status(200).json({
     data: product
@@ -36,14 +36,23 @@ exports.product = async (req, res, next) => {
 
 exports.byid = async (req, res, next) => {
   const { id } = req.params
-  const product = await Brand.findById({ _id: id }).populate('product')
+  const brand = await Brand.findById({ _id: id }).populate('product')
+
+  res.status(200).json({
+    data: brand
+  })
+}
+
+exports.prodbyid = async (req, res, next) => {
+  const { id } = req.params
+  const product = await Product.findById({ _id: id }).populate('product')
 
   res.status(200).json({
     data: product
   })
 }
 
-exports.prodbyid = async (req, res, next) => {
+exports.prodbyidBrand = async (req, res, next) => {
   const { id } = req.params
   const product = await Product.find({ brand: id }).populate('product')
 
@@ -82,7 +91,7 @@ exports.insert = async (req, res, next) => {
 
 exports.insertprod = async (req, res, next) => {
   try {
-    var { name, brand, price } = req.body
+    var { name, brand, price,description } = req.body
     const brandInfo = await Brand.findOne({ name: brand })
 
     //validaion
@@ -97,7 +106,8 @@ exports.insertprod = async (req, res, next) => {
     let product = new Product({
       name: name,
       price: price,
-      brand: brandInfo._id
+      brand: brandInfo._id,
+      description: description,
     })
     await product.save()
 
@@ -169,13 +179,14 @@ exports.updateProd = async (req, res, next) => {
   try {
 
     const { id } = req.params
-    const { name, brand, price } = req.body
+    const { name, brand, price,description } = req.body
     const brandInfo = await Brand.findOne({ name: brand })
 
     const product = await Product.findOneAndUpdate({ _id: id }, {
       name: name,
       brand: brandInfo._id,
-      price: price
+      price: price,
+      description: description,
     })
 
     if (!product) {

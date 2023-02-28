@@ -10,6 +10,8 @@ router.get('/', brandcController.index);
 router.get('/prod', brandcController.product);
 router.get('/:id', brandcController.byid);
 router.get('/prod/:id', brandcController.prodbyid);
+router.get('/allprod/:id', brandcController.prodbyidBrand);
+
 
 router.put('/:id',[passportJWT.isLogin], brandcController.update);
 router.delete('/:id',[passportJWT.isLogin,chackAdmin.isAdmin], brandcController.destroy);

@@ -4,7 +4,8 @@ const Schema = mongoose.Schema;
 const productSchema = new Schema({
     name: { type: String, required: true, trim: true },
     price: { type: Number },
-    brand: { type: Schema.Types.ObjectId, ref: 'Brand' }
+    brand: { type: Schema.Types.ObjectId, ref: 'Brand' },
+    description: { type: String},
 
 }, { collection: "products", timestamps: true ,toJSON:{virtuals:true}});
 
