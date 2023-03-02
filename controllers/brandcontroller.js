@@ -74,16 +74,26 @@ exports.insert = async (req, res, next) => {
       throw error;
     }
 
+    const checkBrand = await Brand.find({ name: name })
 
-    let brand = new Brand({
-      name: name,
-      location: location
-    })
-    await brand.save()
+    if(!checkBrand[0]){
+      let brand = new Brand({
+        name: name,
+        location: location
+      })
+      await brand.save()
+  
+      res.status(200).json({
+        message: "เพิ่มข้อมูลแบรนด์เรียบร้อยแล้ว"
+      })
+    }
+    else{
+      const error = new Error("แบรนด์ที่ท่านกรอกมีข้อมูลอยู่แล้วในระบบ");
+      error.statusCode = 422;
+      throw error;
+    }
 
-    res.status(200).json({
-      message: "เพิ่มข้อมูลแบรนด์เรียบร้อยแล้ว"
-    })
+    
   } catch (error) {
     next(error)
   }

@@ -6,9 +6,6 @@ const { body } = require('express-validator');
 const passportJWT = require('../middleware/passportJWT')
 
 /* GET users listing. */
-router.get('/', userController.index);
-
-router.get('/bio',userController.bio );
 
 router.post('/',[
     body('name').not().isEmpty().withMessage("กรุณากรอกชื่อ-สกุล"),
