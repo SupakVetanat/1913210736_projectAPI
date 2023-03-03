@@ -8,6 +8,7 @@ const passport = require('passport');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var brandRouter = require('./routes/brand');
+var productRouter = require('./routes/product');
 const mongoose = require('mongoose');
 mongoose.connect(config.MONGODB_URI, {useNewUrlParser: true, useUnifiedTopology: true,useFindAndModify:false});
 const errorHandler = require('./middleware/errorHandler');
@@ -27,6 +28,7 @@ app.use(passport.initialize())
 app.use('/', indexRouter);
 app.use('/user', usersRouter);
 app.use('/brand', brandRouter);
+app.use('/product', productRouter);
 app.use(errorHandler);
 
 module.exports = app;

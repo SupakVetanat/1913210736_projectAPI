@@ -1,11 +1,5 @@
 const Brand = require('../models/brand')
 const Product = require('../models/product')
-const config = require('../config/index.js')
-const fs = require('fs');
-const path = require('path');
-const uuidv4 = require('uuid');
-const { promisify } = require('util')
-const writeFileAsync = promisify(fs.writeFile)
 
 const { validationResult } = require('express-validator');
 
@@ -27,7 +21,7 @@ exports.index = async (req, res, next) => {
 }
 
 exports.product = async (req, res, next) => {
-  const product = await Product.find().populate('brand').select('name price brand description')
+  const product = await Product.find().populate('brand').select('name price brand description QTY')
 
   res.status(200).json({
     data: product
@@ -76,24 +70,24 @@ exports.insert = async (req, res, next) => {
 
     const checkBrand = await Brand.find({ name: name })
 
-    if(!checkBrand[0]){
+    if (!checkBrand[0]) {
       let brand = new Brand({
         name: name,
         location: location
       })
       await brand.save()
-  
+
       res.status(200).json({
         message: "เพิ่มข้อมูลแบรนด์เรียบร้อยแล้ว"
       })
     }
-    else{
+    else {
       const error = new Error("แบรนด์ที่ท่านกรอกมีข้อมูลอยู่แล้วในระบบ");
       error.statusCode = 422;
       throw error;
     }
 
-    
+
   } catch (error) {
     next(error)
   }
@@ -101,7 +95,7 @@ exports.insert = async (req, res, next) => {
 
 exports.insertprod = async (req, res, next) => {
   try {
-    var { name, brand, price,description } = req.body
+    var { name, brand, price, description, QTY } = req.body
     const brandInfo = await Brand.findOne({ name: brand })
 
     //validaion
@@ -113,13 +107,25 @@ exports.insertprod = async (req, res, next) => {
       throw error;
     }
 
-    let product = new Product({
-      name: name,
-      price: price,
-      brand: brandInfo._id,
-      description: description,
-    })
-    await product.save()
+    const checkProduct = await Product.find({ name: name })
+    if (!checkProduct[0]) {
+      let product = new Product({
+        name: name,
+        price: price,
+        brand: brandInfo._id,
+        description: description,
+        QTY: QTY
+      })
+      await product.save()
+    }
+    else {
+      const error = new Error("สินค้าที่ท่านกรอกมีข้อมูลอยู่แล้วในระบบ");
+      error.statusCode = 422;
+      throw error;
+    }
+
+
+
 
     res.status(200).json({
       message: "เพิ่มข้อมูลสินค้าเรียบร้อยแล้ว",
@@ -136,11 +142,11 @@ exports.update = async (req, res, next) => {
   try {
 
     const { id } = req.params
-    const { name, location: { lat,lgn } } = req.body
+    const { name, location: { lat, lgn } } = req.body
 
     const brand = await Brand.findOneAndUpdate({ _id: id }, {
       name: name,
-      location: { lat: lat,lgn:lgn }
+      location: { lat: lat, lgn: lgn }
     })
 
     if (!brand) {
@@ -189,7 +195,7 @@ exports.updateProd = async (req, res, next) => {
   try {
 
     const { id } = req.params
-    const { name, brand, price,description } = req.body
+    const { name, brand, price, description, QTY } = req.body
     const brandInfo = await Brand.findOne({ name: brand })
 
     const product = await Product.findOneAndUpdate({ _id: id }, {
@@ -197,6 +203,7 @@ exports.updateProd = async (req, res, next) => {
       brand: brandInfo._id,
       price: price,
       description: description,
+      QTY: QTY
     })
 
     if (!product) {

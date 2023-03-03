@@ -7,8 +7,6 @@ const brandSchema = new Schema({
     lat: Number,
     lgn: Number
   },
-  // createdAt: {type:Date,default:Date.now},
-  // updatedAt: {type:Date,default:Date.now},
 }, { collection: "brands", timestamps: true, toJSON: { virtuals: true } });
 brandSchema.virtual('products', {
   ref: 'product', // Model

@@ -8,6 +8,11 @@ const schema = new Schema({
   password: { type: String, require: true, trim: true, minlength: 5 },
   role: { type: String, default: 'member' }
 }, { collection: "users" });
+schema.virtual('Orders', {
+  ref: 'order', 
+  localField: '_id', 
+  foreignField: 'user', 
+});
 
 schema.methods.encryptPassword = async function (password) {
   const salt = await bcrypt.genSalt(5)

@@ -5,15 +5,15 @@ const productSchema = new Schema({
     name: { type: String, required: true, trim: true },
     price: { type: Number },
     brand: { type: Schema.Types.ObjectId, ref: 'Brand' },
+    QTY: { type: Number },
     description: { type: String},
 
 }, { collection: "products", timestamps: true ,toJSON:{virtuals:true}});
-
-productSchema.virtual('price_vat').get(function () {
-    return (
-        (this.price * 0.07) + this.price
-    )
-})
+productSchema.virtual('Orders', {
+    ref: 'order', 
+    localField: '_id', 
+    foreignField: 'product', 
+  });
 const product = mongoose.model("Product", productSchema);
 
 module.exports = product;
